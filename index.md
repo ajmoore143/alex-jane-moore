@@ -1,94 +1,33 @@
-# Всем привет! Это мой сайт
+# Alex Jane Moore
 
-*~Code~*
-```
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <sys/mman.h>
-// uint64_t == 8 byte
+**Computational biologist · Aging research · UC San Diego**
 
-#define HEAP_SIZE 400
-#define CHUNK_SIZE 8
+I study why humans age and whether the process can be slowed. My work sits at the intersection of bioinformatics, pharmacogenomics, and the molecular biology of aging, using computation to find patterns that translate into real clinical interventions.
 
-uint64_t *HEAP_START = NULL;
+I'm an undergraduate in Molecular and Cell Biology (minor in Computer Science) at UC San Diego, graduating early in Winter 2027. I'm preparing to pursue an MD-PhD with a focus on biology of aging, building the molecular depth and clinical credibility required to lead translational longevity research.
 
-void init_heap() {
-    // Hey OS! where can I start my heap?
-    uint64_t * heap = mmap(NULL, HEAP_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_SHARED, -1, 0);
-    HEAP_START = heap;
-    // more setup?
-    *HEAP_START = HEAP_SIZE; // writing header
-}
+## What I work on
 
-void *my_malloc(size_t size) {
-    uint64_t *current = HEAP_START;
-    while (current < (HEAP_START + (HEAP_SIZE / CHUNK_SIZE))) {
-        // Traverse the heap
-        uint64_t cur_header = *current; // reading header
-        uint64_t cur_size = cur_header & (~1); // get size
-        uint64_t is_free = ~cur_header & 1;
-        if (is_free && (size + sizeof(uint64_t) <= cur_size)) {
-            // Proceed
-            // Split the block into malloc'd and free parts
-            // if needed
-            // Make sure alloc'd block is multiple of 8
-            // Round up to the next multiple of 8
-            size_t size_w_hdr = size + sizeof(uint64_t);
-            size_t rounded = ((size_w_hdr + 7) / 8) * 8;
-            // check if we need to split or not
-            if (cur_size > rounded + 8) { // +8 so no dangling 8-byte chunks
-                *current = rounded + 1; // set alloc'd bit
-                // split
-                uint64_t *remaining = current + (*current / CHUNK_SIZE);
-                *remaining = cur_size - rounded;
-            } else {
-                *current += 1;
-            }
-            return current + 1;
-        } else {
-            // not in a free block
-            // go to my next block
-            uint64_t *next = current + (cur_size / CHUNK_SIZE);
-            current = next;
-        }
-    }
-    return NULL;
-}
+- **Pharmacogenomics and precision medicine** — predicting how individual genotype shapes drug response, including for interventions relevant to aging.
+- **Multi-omics and aging biology** — integrating genomic, transcriptomic, and proteomic data to understand how aging unfolds at the molecular level.
+- **AI in medicine** — building and benchmarking machine learning systems for clinical genomic recommendations.
 
-void my_free(void *p) {
-    uint64_t *current = p;
-    uint64_t *header = current - 1;
-    if (*header & 1) {
-        *header = *header & ~1;
-    }
-}
+## Selected publications
 
-void print_heap() {
-    uint64_t *current = HEAP_START;
-    while (current < (HEAP_START + (HEAP_SIZE / CHUNK_SIZE))) {
-        uint64_t cur_header = *current;
-        uint64_t cur_size = (cur_header / 2) * 2;
-        printf("%p\t%ld\t%ld\n", current, cur_header % 2, cur_size);
-        uint64_t *next = current + (cur_size / CHUNK_SIZE);
-        current = next;
-    }
-    printf("\n\n");
-}
+I'm a co-author on five papers spanning Nature Portfolio, Mayo Clinic Proceedings, and JAMIA. Two are published:
 
-int main() {
-    init_heap();
+- Zack M, Stupichev DN, **Moore AJ**, et al. (2025). *Artificial Intelligence and Multi-Omics in Pharmacogenomics: A New Era of Precision Medicine.* **Mayo Clinic Proceedings: Digital Health.** [DOI: 10.1016/j.mcpdig.2025.100246](https://doi.org/10.1016/j.mcpdig.2025.100246)
+- Zack M, Slobodchikov I, Stupichev D, **Moore A**, et al. (2025). *Benchmarking Large Language Models for Replication of Guideline-Based PGx Recommendations.* **The Pharmacogenomics Journal** (Nature Portfolio). [DOI: 10.1038/s41397-025-00383-0](https://doi.org/10.1038/s41397-025-00383-0)
 
-    print_heap();
-    int *a = my_malloc(40);
-    print_heap();
-    int *b = my_malloc(10);
-    print_heap();
-    my_free(a);
-    print_heap();
-    int *c = my_malloc(20);
-    print_heap();
-    my_free(b);
-    my_free(c);
-}
-```
+A third paper (*An Agentic AI System for Automated Pharmacogenomic Recommendation Generation*, **npj Digital Medicine**) is accepted and in press. Two more are under review.
+
+## Experience, in short
+
+- **Research Intern**, Snyder Lab, Stanford University School of Medicine — built a Python pipeline integrating KEGG, NCBI, and CAZy to map orthologous genes across the human gut microbiome.
+- **Bioinformatics & Product Associate**, PGxAI — genetic data analysis, AI model development, and SOC 2 / HIPAA compliance for a pharmacogenomic platform.
+
+## Get in touch
+
+- [About me](about.html)
+- Email: alexjanemoore143@gmail.com
+- LinkedIn: [alex-jane-moore](https://linkedin.com/in/alex-jane-moore)
